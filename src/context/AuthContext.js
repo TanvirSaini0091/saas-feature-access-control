@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useMemo } from 'react';
 import { TIERS } from '../lib/permissions';
+import { auditAccess } from '../utils/logger';
 
 const AuthContext = createContext(null);
 
@@ -15,11 +16,20 @@ export const AuthProvider = ({ children }) => {
   const value = useMemo(() => {
     const permissions = TIERS[user.tier.toUpperCase()]?.permissions || [];
     
+  const hasPermission = (permission) => {
+  const isAllowed = permissions.includes(permission);
+  
+  if (!isAllowed) {
+    auditAccess(user, permission, "DENIED");
+  }
+
+  return isAllowed;
+};
+
     return {
       user,
       setUser,
-      // Helper function to check if the current user has a specific permission
-      hasPermission: (permission) => permissions.includes(permission),
+      hasPermission,
     };
   }, [user]);
 

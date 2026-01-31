@@ -1,26 +1,14 @@
 import logo from './logo.svg';
 import './App.css';
 import TierSwitcher from './components/TierSwitcher';
+import Dashboard from './features/dashboard/Dashboard';
 
 function App() {
   return (
-    <div className="App">
+    <>
+      <Dashboard/>
       <TierSwitcher/>
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    </>
   );
 }
 
