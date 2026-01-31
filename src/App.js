@@ -1,9 +1,11 @@
 import logo from './logo.svg';
 import './App.css';
+import TierSwitcher from './components/TierSwitcher';
 
 function App() {
   return (
     <div className="App">
+      <TierSwitcher/>
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
