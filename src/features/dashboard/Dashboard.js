@@ -26,28 +26,29 @@ const Dashboard = () => {
         </FeatureGuard>
 
         {/* PRO SECTION: Requires VIEW_ANALYTICS with a Fallback */}
-        <FeatureGuard 
-          permission={PERMISSIONS.VIEW_ANALYTICS}
-          fallback={
-            <section style={{ ...cardStyle, backgroundColor: '#f9f9f9', color: '#666' }}>
-              <h3>Advanced Analytics 🔒</h3>
-              <p>Upgrade to <strong>PRO</strong> to unlock deep-dive engagement metrics.</p>
-              <button style={upgradeBtnStyle}>View Pricing</button>
-            </section>
-          }
-        >
-          <section style={{ ...cardStyle, borderLeft: '5px solid #28a745' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <h3>Advanced Analytics</h3>
-              {/* NESTED GUARD: Even within Pro, we can lock specific actions */}
-              <FeatureGuard permission={PERMISSIONS.GENERATE_REPORTS}>
-                <button onClick={() => alert('PDF Exporting...')}>Export Report</button>
-              </FeatureGuard>
-            </div>
-            <p>Retention Rate: 84%</p>
-            <p>Average Session Duration: 4m 32s</p>
-          </section>
-        </FeatureGuard>
+<section style={{ ...cardStyle, borderLeft: '5px solid #28a745' }}>
+  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+    <h3>Advanced Analytics</h3>
+    
+    {/* This will now be visible to FREE users, but in 'disable' mode */}
+    <FeatureGuard 
+      permission={PERMISSIONS.GENERATE_REPORTS}
+      mode="disable"
+      onDenied={() => alert("🔒 Pro Feature: Upgrade to export reports.")}
+    >
+      <button style={upgradeBtnStyle}>Export Report</button>
+    </FeatureGuard>
+  </div>
+
+  {/* We can still hide the sensitive DATA for Free users */}
+  <FeatureGuard 
+    permission={PERMISSIONS.VIEW_ANALYTICS} 
+    fallback={<p style={{color: '#999'}}>Data hidden. Upgrade to Pro to view metrics.</p>}
+  >
+    <p>Retention Rate: 84%</p>
+    <p>Average Session Duration: 4m 32s</p>
+  </FeatureGuard>
+</section>
       </div>
     </div>
   );
