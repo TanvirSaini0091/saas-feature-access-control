@@ -1,41 +1,145 @@
-# SaaS Feature Access Control
+# React Feature Access Control & Permission Gating Demo
 
-## Problem Statement
+This project is a **frontend-only React application** that demonstrates a clean, centralized approach to feature access control (feature gating) based on user tiers. It focuses on **architecture and enforcement patterns**, not backend security or visual polish.
 
-Modern SaaS applications often suffer from *conditional spaghetti*. As products grow, business logic becomes scattered across the codebase in the form of repetitive checks like `if (user.plan === 'pro')`.  
-
-This approach is difficult to test, easy to bypass on the frontend, and extremely hard to maintain at scale.
-
-This project aims to design a centralized, decoupled system for **Feature Gating** and **Role-Based Access Control (RBAC)** that is secure, scalable, and maintainable.
+The application renders a single dashboard page whose UI dynamically adapts based on the current user’s subscription tier (`FREE` or `PRO`). Feature visibility and interactivity are controlled declaratively using a reusable guard component rather than scattered conditional logic.
 
 ---
 
-## High-Level System Overview
+## What This Project Demonstrates
 
-The system acts as a centralized **Gatekeeper** responsible for determining whether a user is allowed to access a specific feature.
+This project exists to show **how frontend permission logic can be structured sanely** in a real-world SaaS-style UI.
 
-### Identity Layer
-Responsible for identifying who the user is and what subscription tier or role they belong to.
+It demonstrates:
 
-### Policy Engine
-A centralized set of rules that maps **permissions** to **tiers or roles**, defining what actions are allowed.
+- Centralized permission definitions
+- Declarative feature gating at the component boundary
+- Separation of identity, policy, and UI
+- “Hide vs Disable” feature access patterns
+- Event interception to block unauthorized interactions
+- Audit logging for denied access attempts
 
-### Enforcement Layer
-Reusable enforcement mechanisms implemented as:
-- Frontend components to guide user experience
-- Backend middleware to enforce access control securely
+This is **not** a full product, backend, or production-ready security system.
+
+---
+
+## The Problem: Conditional Spaghetti
+
+In many frontend applications, feature access is handled with repeated checks like:
+
+```js
+if (user.plan === 'pro') { ... }
+```
+
+When these checks spread across components, the codebase becomes difficult to maintain, risky to change, and hard to reason about.
+
+This project replaces scattered conditionals with:
+
+- A **single source of truth** for permissions
+- A **FeatureGuard** component that enforces access declaratively
+- UI components that remain unaware of tier logic
+
+---
+
+## Folder Structure
+
+```txt
+src/
+├─ components/
+│  └─ TierSwitcher.js
+├─ context/
+│  └─ AuthContext.js
+├─ features/
+│  └─ dashboard/
+│     └─ Dashboard.js
+├─ guards/
+│  └─ FeatureGuard.js
+├─ lib/
+│  └─ permissions.js
+├─ utils/
+│  └─ logger.js
+├─ App.js
+└─ index.js
+```
+
+---
+
+## Architecture Overview
+
+### Centralized Permission Model
+
+All permissions and tier definitions live in a single file:
+
+```js
+lib/permissions.js
+```
+
+This ensures access rules are modified in one place.
+
+---
+
+### Auth Context as the Enforcement Layer
+
+`AuthContext` simulates an authenticated user and exposes:
+
+- `user`
+- `setUser`
+- `hasPermission(permission)`
+
+Permission checks are memoized and include audit logging for denied access attempts.
+
+---
+
+### FeatureGuard Component
+
+`FeatureGuard` is a reusable wrapper that enforces access rules declaratively.
+
+Supported behaviors:
+
+- **Hide**: Removes unauthorized UI from the DOM
+- **Disable**: Shows UI but intercepts interaction via `onClickCapture`
+
+---
+
+## Audit Logging
+
+Denied access attempts are logged via `utils/logger.js` for observability.
+
+---
+
+## Dev Tier Switcher
+
+A floating **Tier Switcher** allows toggling between `FREE` and `PRO` tiers for demo purposes.
+
+---
+
+## Security Note
+
+This project implements **client-side access control only**.
+
+All real security enforcement must happen on the backend in production systems.
 
 ---
 
 ## Explicit Non-Goals
 
-To keep the focus on architecture and access-control logic, the following are explicitly out of scope:
+- Backend services
+- Authentication flows
+- Databases
+- Payment systems
+- Production security enforcement
 
-- **Full Payment Processing**  
-  Subscription status will be mocked. This project does not attempt to reimplement payment providers like Stripe.
+---
 
-- **Complex UI/UX**  
-  The interface will remain minimal and functional. The emphasis is on logic and system design, not visual polish.
+## Running the Project
 
-- **Production-Grade Database**  
-  An in-memory or mocked persistence layer will be used to focus on authorization algorithms rather than infrastructure concerns.
+```bash
+npm install
+npm start
+```
+
+Use the tier switcher to observe how the UI adapts based on permissions.
+
+---
+
+This project is intentionally small and focused on **frontend access control architecture**, not product completeness.
